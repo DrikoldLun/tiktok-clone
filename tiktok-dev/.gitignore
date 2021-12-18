@@ -1,0 +1,5 @@
+tiktok-api/src/main/resources/application.yml
+tiktok-api/src/main/resources/application-dev.yml
+tiktok-api/src/main/resources/application-prod.yml
+tiktok-common/src/main/java/com/lunz/utils/SMSUtils.java
+tiktok-common/src/main/resources/tencentcloud.properties
