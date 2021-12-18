@@ -18,18 +18,18 @@ spring:
       max-lifetime: 18000000                  # 连接池的最大生命时长（毫秒），超时则会被释放（retired）
       connection-test-query: SELECT 1
   redis:
-    #host: 192.168.0.130 #家
-    host: 192.168.2.227 #自习室
+    host: 192.168.0.130 #家
+    #host: 192.168.2.227 #自习室
     port: 6379
     database: 0
     password: 1001032662
 
 # MinIO 配置
 minio:
-  endpoint: http://192.168.2.227:9000 # 自习室
-  fileHost: http://192.168.2.227:9000 # 自习室
-  #endpoint: http://192.168.0.130:9000      # MinIO服务地址
-  #fileHost: http://192.168.0.130:9000      # 文件地址host
+  #endpoint: http://192.168.2.227:9000 # 自习室
+  #fileHost: http://192.168.2.227:9000 # 自习室
+  endpoint: http://192.168.0.130:9000      # MinIO服务地址
+  fileHost: http://192.168.0.130:9000      # 文件地址host
   bucketName: lunz                         # 存储桶bucket名称
   accessKey: lunz                          # 用户名
   secretKey: 1001032662                    # 密码
