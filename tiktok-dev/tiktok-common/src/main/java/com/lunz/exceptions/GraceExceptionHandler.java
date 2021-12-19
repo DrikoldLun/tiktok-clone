@@ -2,6 +2,7 @@ package com.lunz.exceptions;
 
 import com.lunz.grace.result.GraceJSONResult;
 import com.lunz.grace.result.ResponseStatusEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,6 +19,7 @@ import java.util.Map;
  * 统一异常拦截处理
  * 可以针对异常的类型进行捕获，然后返回json信息到前端
  */
+@Slf4j
 @ControllerAdvice
 public class GraceExceptionHandler {
 
@@ -33,6 +35,7 @@ public class GraceExceptionHandler {
     public GraceJSONResult returnMethodArgumentNotValid(MethodArgumentNotValidException e) {
         BindingResult result = e.getBindingResult();
         Map<String, String> map = getErrors(result);
+        log.error(map.toString());
         return GraceJSONResult.errorMap(map);
     }
 
