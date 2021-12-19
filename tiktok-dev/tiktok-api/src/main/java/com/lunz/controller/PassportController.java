@@ -1,5 +1,6 @@
 package com.lunz.controller;
 
+import com.lunz.base.BaseInfoProperties;
 import com.lunz.bo.RegistLoginBO;
 import com.lunz.grace.result.GraceJSONResult;
 import com.lunz.grace.result.ResponseStatusEnum;
@@ -23,7 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("passport")
 @Api(tags = "PassportController通行证接口模块")
-public class PassportController extends BaseInfoProperties{
+public class PassportController extends BaseInfoProperties {
     @Autowired
     private SMSUtils smsUtils;
 

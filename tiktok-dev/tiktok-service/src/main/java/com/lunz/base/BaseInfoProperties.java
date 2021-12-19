@@ -1,17 +1,18 @@
-package com.lunz.controller;
+package com.lunz.base;
 
+import com.github.pagehelper.PageInfo;
+import com.lunz.utils.PagedGridResult;
 import com.lunz.utils.RedisOperator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BaseInfoProperties {
     @Autowired
     public RedisOperator redis;
+
+    public static final Integer COMMON_START_PAGE = 1;
+    public static final Integer COMMON_PAGE_SIZE = 10;
 
     public static final String MOBILE_SMSCODE = "mobile:smscode";
     public static final String REDIS_USER_TOKEN = "redis_user_token";
@@ -26,4 +27,14 @@ public class BaseInfoProperties {
     public static final String REDIS_VLOG_BE_LIKED_COUNTS = "redis_vlog_be_liked_counts";
     public static final String REDIS_VLOGER_BE_LIKED_COUNTS = "redis_vloger_be_liked_counts";
 
+    public PagedGridResult setterPagedGrid(List<?> list,
+                                           Integer page) {
+        PageInfo<?> pageList = new PageInfo<>(list);
+        PagedGridResult gridResult = new PagedGridResult();
+        gridResult.setRows(list); // 每行显示的内容
+        gridResult.setPage(page); // 页号
+        gridResult.setRecords(pageList.getTotal()); // 总记录数
+        gridResult.setTotal(pageList.getPages()); // 总页数
+        return gridResult;
+    }
 }

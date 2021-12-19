@@ -225,10 +225,10 @@
 			var me = this;
 			if (tabIndex == 0) {
 				// 虚位以待
-			} else if (tabIndex == 1) {
+			} else if (tabIndex == 1) { // 刷新关注
 				me.playStatus = false;
 				me.playFollowStatus = true;
-			} else if (tabIndex == 2) {
+			} else if (tabIndex == 2) { // 刷新推荐
 				me.playStatus = true;
 				me.playFollowStatus = false;
 			}
