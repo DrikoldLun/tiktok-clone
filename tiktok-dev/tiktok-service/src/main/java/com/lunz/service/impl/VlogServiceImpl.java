@@ -16,6 +16,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +59,41 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
             map.put("search",search);
         }
         List<IndexVlogVO> list = vlogMapperCustom.getIndexVlogList(map);
+        return setterPagedGrid(list,page);
+    }
+
+    @Override
+    public IndexVlogVO getVlogDetailById(String vlogId) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("vlogId",vlogId);
+        List<IndexVlogVO> list = vlogMapperCustom.getVlogDetailById(map);
+        if (list != null && !list.isEmpty()) {
+            IndexVlogVO vlogVO = list.get(0);
+            return vlogVO;
+        }
+        return null;
+    }
+
+    @Transactional
+    @Override
+    public void changeToPrivateOrPublic(String userId, String vlogId, Integer yesOrNo) {
+        Example example = new Example(Vlog.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("id",vlogId);
+        criteria.andEqualTo("vlogerId",userId);
+        Vlog pendingVlog = new Vlog();
+        pendingVlog.setIsPrivate(yesOrNo);
+        vlogMapper.updateByExampleSelective(pendingVlog,example);
+    }
+
+    @Override
+    public PagedGridResult queryMyVlogList(String userId, Integer page, Integer pageSize, Integer yesOrNo) {
+        Example example = new Example(Vlog.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("vlogerId",userId);
+        criteria.andEqualTo("isPrivate",yesOrNo);
+        PageHelper.startPage(page,pageSize);
+        List<Vlog> list = vlogMapper.selectByExample(example);
         return setterPagedGrid(list,page);
     }
 }

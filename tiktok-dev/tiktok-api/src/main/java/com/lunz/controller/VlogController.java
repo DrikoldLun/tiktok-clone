@@ -2,6 +2,7 @@ package com.lunz.controller;
 
 import com.lunz.base.BaseInfoProperties;
 import com.lunz.bo.VlogBO;
+import com.lunz.enums.YesOrNo;
 import com.lunz.grace.result.GraceJSONResult;
 import com.lunz.service.VlogService;
 import com.lunz.utils.PagedGridResult;
@@ -28,6 +29,7 @@ public class VlogController extends BaseInfoProperties {
         return GraceJSONResult.ok();
     }
 
+    // 获取视频list，主页search为空获取所有视频，查询页根据search内容模糊查询
     @GetMapping("indexList")
     public GraceJSONResult indexList(@RequestParam(defaultValue = "") String search,
                                      @RequestParam Integer page, // 页码
@@ -40,6 +42,56 @@ public class VlogController extends BaseInfoProperties {
             pageSize = COMMON_PAGE_SIZE;
         }
         PagedGridResult gridResult = vlogService.getIndexVlogList(search,page,pageSize);
+        return GraceJSONResult.ok(gridResult);
+    }
+
+    @GetMapping("detail")
+    public GraceJSONResult detail(@RequestParam(defaultValue = "") String userId,
+                                  @RequestParam String vlogId) {
+        return GraceJSONResult.ok(vlogService.getVlogDetailById(vlogId));
+    }
+
+    @PostMapping("changeToPrivate")
+    public GraceJSONResult changeToPrivate(@RequestParam String userId,
+                                           @RequestParam String vlogId) {
+        vlogService.changeToPrivateOrPublic(userId,vlogId,YesOrNo.YES.type);
+        return GraceJSONResult.ok(vlogService.getVlogDetailById(vlogId));
+    }
+
+    @PostMapping("changeToPublic")
+    public GraceJSONResult changeToPublic(@RequestParam String userId,
+                                           @RequestParam String vlogId) {
+        vlogService.changeToPrivateOrPublic(userId,vlogId,YesOrNo.NO.type);
+        return GraceJSONResult.ok(vlogService.getVlogDetailById(vlogId));
+    }
+
+    @GetMapping("myPublicList")
+    public GraceJSONResult myPublicList(@RequestParam String userId,
+                                        @RequestParam Integer page,
+                                        @RequestParam Integer pageSize) {
+        // 默认赋值
+        if (page == null) {
+            page = COMMON_START_PAGE;
+        }
+        if (pageSize == null) {
+            pageSize = COMMON_PAGE_SIZE;
+        }
+        PagedGridResult gridResult = vlogService.queryMyVlogList(userId,page,pageSize,YesOrNo.NO.type);
+        return GraceJSONResult.ok(gridResult);
+    }
+
+    @GetMapping("myPrivateList")
+    public GraceJSONResult myPrivateList(@RequestParam String userId,
+                                        @RequestParam Integer page,
+                                        @RequestParam Integer pageSize) {
+        // 默认赋值
+        if (page == null) {
+            page = COMMON_START_PAGE;
+        }
+        if (pageSize == null) {
+            pageSize = COMMON_PAGE_SIZE;
+        }
+        PagedGridResult gridResult = vlogService.queryMyVlogList(userId,page,pageSize,YesOrNo.YES.type);
         return GraceJSONResult.ok(gridResult);
     }
 }
