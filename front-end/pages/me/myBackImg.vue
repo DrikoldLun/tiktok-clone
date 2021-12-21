@@ -81,7 +81,7 @@
 				uni.chooseImage({
 					count: 1,
 					sizeType: ["compressed"],
-					crop: {
+				    crop: {
 						quality: 60,
 						width: 400,
 						height: 400

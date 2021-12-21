@@ -1,6 +1,6 @@
 package com.lunz.interceptor;
 
-import com.lunz.controller.BaseInfoProperties;
+import com.lunz.base.BaseInfoProperties;
 import com.lunz.exceptions.GraceException;
 import com.lunz.grace.result.ResponseStatusEnum;
 import com.lunz.utils.IPUtil;

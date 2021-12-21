@@ -46,7 +46,7 @@
 				});
 				
 				uni.chooseVideo({
-					sourceType: ['album'],
+					sourceType: ['album','camera'],
 					success(e) {
 						
 						uni.navigateTo({

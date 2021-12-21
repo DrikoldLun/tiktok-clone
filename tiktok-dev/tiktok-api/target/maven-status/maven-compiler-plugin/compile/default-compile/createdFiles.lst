@@ -1,4 +1,4 @@
 com/lunz/config/MinIOConfig.class
+com/lunz/controller/VlogController.class
 com/lunz/Application.class
-com/lunz/controller/FileController.class
 com/lunz/controller/HelloController.class

@@ -1,5 +1,6 @@
 package com.lunz.controller;
 
+import com.lunz.base.BaseInfoProperties;
 import com.lunz.bo.UpdatedUserBO;
 import com.lunz.config.MinIOConfig;
 import com.lunz.enums.FileTypeEnum;
@@ -9,12 +10,9 @@ import com.lunz.grace.result.ResponseStatusEnum;
 import com.lunz.pojo.Users;
 import com.lunz.service.UserService;
 import com.lunz.utils.MinIOUtils;
-import com.lunz.utils.SMSUtils;
 import com.lunz.vo.UsersVO;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -26,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @Api(tags = "UserInfoController 用户信息接口模块")
 @RequestMapping("userInfo")
-public class UserInfoController extends BaseInfoProperties{
+public class UserInfoController extends BaseInfoProperties {
     @Autowired
     private UserService userService;
 
