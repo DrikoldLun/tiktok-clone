@@ -9,6 +9,7 @@ import com.lunz.mapper.VlogMapper;
 import com.lunz.mapper.VlogMapperCustom;
 import com.lunz.pojo.MyLikedVlog;
 import com.lunz.pojo.Vlog;
+import com.lunz.service.FansService;
 import com.lunz.service.VlogService;
 import com.lunz.utils.PagedGridResult;
 import com.lunz.vo.IndexVlogVO;
@@ -37,6 +38,9 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
     private MyLikedVlogMapper myLikedVlogMapper;
 
     @Autowired
+    private FansService fansService;
+
+    @Autowired
     private Sid sid;
 
     @Transactional
@@ -54,6 +58,18 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         vlogMapper.insert(vlog);
     }
 
+    private void checklikefollowstatus(String userId,IndexVlogVO v) {
+        String vlogId = v.getVlogId();
+        if (StringUtils.isNotBlank(userId)) {
+            // 判断用户是否关注该博主
+            v.setDoIFollowVloger(fansService.queryDoIFollowVloger(userId,v.getVlogerId()));
+            // 判断当前用户是否点赞过视频
+            v.setDoILikeThisVlog(doILikeVlog(userId,vlogId));
+        }
+        // 获得当前视频被点赞过的总数
+        v.setLikeCounts(getVlogBeLikedCounts(vlogId));
+    }
+
     @Override
     public PagedGridResult getIndexVlogList(String userId,
                                             String search,
@@ -67,12 +83,7 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         List<IndexVlogVO> list = vlogMapperCustom.getIndexVlogList(map);
         for (IndexVlogVO v:list) {
             // 判断当前用户是否点赞过视频
-            String vlogId = v.getVlogId();
-            if (StringUtils.isNotBlank(userId)) {
-                v.setDoILikeThisVlog(doILikeVlog(userId,vlogId));
-            }
-            // 获得当前视频被点赞过的总数
-            v.setLikeCounts(getVlogBeLikedCounts(vlogId));
+            checklikefollowstatus(userId,v);
         }
         return setterPagedGrid(list,page);
     }
@@ -95,12 +106,13 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
     }
 
     @Override
-    public IndexVlogVO getVlogDetailById(String vlogId) {
+    public IndexVlogVO getVlogDetailById(String userId,String vlogId) {
         Map<String,Object> map = new HashMap<>();
         map.put("vlogId",vlogId);
         List<IndexVlogVO> list = vlogMapperCustom.getVlogDetailById(map);
         if (list != null && !list.isEmpty()) {
             IndexVlogVO vlogVO = list.get(0);
+            checklikefollowstatus(userId,vlogVO);
             return vlogVO;
         }
         return null;
@@ -156,6 +168,30 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         Map<String,Object> map = new HashMap<>();
         map.put("userId",userId);
         List<IndexVlogVO> list = vlogMapperCustom.getMyLikedVlogList(map);
+        return setterPagedGrid(list,page);
+    }
+
+    @Override
+    public PagedGridResult getMyFollowVlogList(String myId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page,pageSize);
+        Map<String,Object> map = new HashMap<>();
+        map.put("myId",myId);
+        List<IndexVlogVO> list = vlogMapperCustom.getMyFollowVlogList(map);
+        for (IndexVlogVO v:list) {
+            checklikefollowstatus(myId,v);
+        }
+        return setterPagedGrid(list,page);
+    }
+
+    @Override
+    public PagedGridResult getMyFriendVlogList(String myId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page,pageSize);
+        Map<String,Object> map = new HashMap<>();
+        map.put("myId",myId);
+        List<IndexVlogVO> list = vlogMapperCustom.getMyFriendVlogList(map);
+        for (IndexVlogVO v:list) {
+            checklikefollowstatus(myId,v);
+        }
         return setterPagedGrid(list,page);
     }
 }

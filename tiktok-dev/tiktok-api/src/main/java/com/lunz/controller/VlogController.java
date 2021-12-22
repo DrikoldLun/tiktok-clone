@@ -29,10 +29,10 @@ public class VlogController extends BaseInfoProperties {
         return GraceJSONResult.ok();
     }
 
-    // 获取视频list，主页search为空获取所有视频，查询页根据search内容模糊查询
+    // 获取视频list，主页search为空获取所有视频(推荐页)，查询页根据search内容模糊查询
     @GetMapping("indexList")
     public GraceJSONResult indexList(@RequestParam(defaultValue="") String userId,
-                                     @RequestParam(defaultValue = "") String search,
+                                     @RequestParam(defaultValue="") String search,
                                      @RequestParam Integer page, // 页码
                                      @RequestParam Integer pageSize) { // 一页内容数量
         // 默认赋值
@@ -46,24 +46,56 @@ public class VlogController extends BaseInfoProperties {
         return GraceJSONResult.ok(gridResult);
     }
 
+    // 获取关注页视频list
+    @GetMapping("followList")
+    public GraceJSONResult followList(@RequestParam(defaultValue="") String myId,
+                                     @RequestParam Integer page, // 页码
+                                     @RequestParam Integer pageSize) { // 一页内容数量
+        // 默认赋值
+        if (page == null) {
+            page = COMMON_START_PAGE;
+        }
+        if (pageSize == null) {
+            pageSize = COMMON_PAGE_SIZE;
+        }
+        PagedGridResult gridResult = vlogService.getMyFollowVlogList(myId,page,pageSize);
+        return GraceJSONResult.ok(gridResult);
+    }
+
+    // 获取朋友页视频list
+    @GetMapping("friendList")
+    public GraceJSONResult friendList(@RequestParam(defaultValue="") String myId,
+                                      @RequestParam Integer page, // 页码
+                                      @RequestParam Integer pageSize) { // 一页内容数量
+        // 默认赋值
+        if (page == null) {
+            page = COMMON_START_PAGE;
+        }
+        if (pageSize == null) {
+            pageSize = COMMON_PAGE_SIZE;
+        }
+        PagedGridResult gridResult = vlogService.getMyFriendVlogList(myId,page,pageSize);
+        return GraceJSONResult.ok(gridResult);
+    }
+
     @GetMapping("detail")
     public GraceJSONResult detail(@RequestParam(defaultValue = "") String userId,
                                   @RequestParam String vlogId) {
-        return GraceJSONResult.ok(vlogService.getVlogDetailById(vlogId));
+        return GraceJSONResult.ok(vlogService.getVlogDetailById(userId,vlogId));
     }
 
     @PostMapping("changeToPrivate")
     public GraceJSONResult changeToPrivate(@RequestParam String userId,
                                            @RequestParam String vlogId) {
         vlogService.changeToPrivateOrPublic(userId,vlogId,YesOrNo.YES.type);
-        return GraceJSONResult.ok(vlogService.getVlogDetailById(vlogId));
+        return GraceJSONResult.ok(vlogService.getVlogDetailById(userId,vlogId));
     }
 
     @PostMapping("changeToPublic")
     public GraceJSONResult changeToPublic(@RequestParam String userId,
                                            @RequestParam String vlogId) {
         vlogService.changeToPrivateOrPublic(userId,vlogId,YesOrNo.NO.type);
-        return GraceJSONResult.ok(vlogService.getVlogDetailById(vlogId));
+        return GraceJSONResult.ok(vlogService.getVlogDetailById(userId,vlogId));
     }
 
     @GetMapping("myPublicList")
