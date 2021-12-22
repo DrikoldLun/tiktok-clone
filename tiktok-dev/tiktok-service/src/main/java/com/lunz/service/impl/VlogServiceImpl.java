@@ -55,16 +55,30 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
     }
 
     @Override
-    public PagedGridResult getIndexVlogList(String search,
-                                              Integer page,
-                                              Integer pageSize) {
+    public PagedGridResult getIndexVlogList(String userId,
+                                            String search,
+                                            Integer page,
+                                            Integer pageSize) {
         PageHelper.startPage(page,pageSize); // 针对方法的拦截，相当于在sql查询中limit
         Map<String,Object> map = new HashMap<>();
         if (StringUtils.isNotBlank(search)) {
             map.put("search",search);
         }
         List<IndexVlogVO> list = vlogMapperCustom.getIndexVlogList(map);
+        for (IndexVlogVO v:list) {
+            if (StringUtils.isNotBlank(userId)) {
+                v.setDoILikeThisVlog(doILikeVlog(userId, v.getVlogId()));
+            }
+        }
         return setterPagedGrid(list,page);
+    }
+
+    private boolean doILikeVlog(String myId,String vlogId) {
+        String doILike = redis.get(REDIS_USER_LIKE_VLOG+":"+myId+":"+vlogId);
+        if (StringUtils.isNotBlank(doILike) && doILike.equalsIgnoreCase("1")) {
+            return true;
+        }
+        return false;
     }
 
     @Override

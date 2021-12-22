@@ -16,7 +16,8 @@ public interface VlogService {
     /**
      * 查询首页/搜索的vlog列表
      */
-    public PagedGridResult getIndexVlogList(String search,
+    public PagedGridResult getIndexVlogList(String userId,
+                                            String search,
                                             Integer page,
                                             Integer pageSzie);
 

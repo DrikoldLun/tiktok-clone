@@ -31,7 +31,8 @@ public class VlogController extends BaseInfoProperties {
 
     // 获取视频list，主页search为空获取所有视频，查询页根据search内容模糊查询
     @GetMapping("indexList")
-    public GraceJSONResult indexList(@RequestParam(defaultValue = "") String search,
+    public GraceJSONResult indexList(@RequestParam(defaultValue="") String userId,
+                                     @RequestParam(defaultValue = "") String search,
                                      @RequestParam Integer page, // 页码
                                      @RequestParam Integer pageSize) { // 一页内容数量
         // 默认赋值
@@ -41,7 +42,7 @@ public class VlogController extends BaseInfoProperties {
         if (pageSize == null) {
             pageSize = COMMON_PAGE_SIZE;
         }
-        PagedGridResult gridResult = vlogService.getIndexVlogList(search,page,pageSize);
+        PagedGridResult gridResult = vlogService.getIndexVlogList(userId,search,page,pageSize);
         return GraceJSONResult.ok(gridResult);
     }
 
