@@ -298,7 +298,7 @@
 			</view>
 					
 			<view v-if="publicVlogList.length > 0" 
-				style="width: 750rpx;display: flex;flex-direction: row;justify-content: center;position: relative; top: -260rpx;">
+				style="width: 750rpx;display: >lex;flex-direction: row;justify-content: center;position: relative; top: -260rpx;">
 				<text style="color: #FFFFFF;font-size: 14px;">- 知深浅 | 唯有你 -</text>
 			</view>
 		</scroll-view>

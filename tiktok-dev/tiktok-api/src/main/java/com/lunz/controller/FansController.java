@@ -48,7 +48,60 @@ public class FansController extends BaseInfoProperties {
 
         // 保存粉丝关系到数据库
         fansService.doFollow(myId,vlogerId);
+        // 博主的粉丝+1
+        redis.increment(REDIS_MY_FANS_COUNTS+":"+vlogerId,1);
+        // 我的关注+1
+        redis.increment(REDIS_MY_FOLLOWS_COUNTS+":"+myId,1);
+        // 我和博主的关联关系，依赖redis，不要存入数据库，避免db的性能瓶颈
+        redis.set(REDIS_FANS_AND_VLOGGER_RELATIONSHIP+":"+myId+":"+vlogerId,"1");
+
         return GraceJSONResult.ok();
     }
 
+    @PostMapping("cancel")
+    public GraceJSONResult cancel(@RequestParam String myId,
+                                  @RequestParam String vlogerId) {
+        // 取关删除对方粉丝业务
+        fansService.doCancel(myId, vlogerId);
+        // 博主的粉丝-1
+        redis.decrement(REDIS_MY_FANS_COUNTS+":"+vlogerId,1);
+        // 我的关注-1
+        redis.decrement(REDIS_MY_FOLLOWS_COUNTS+":"+myId,1);
+        // 我和博主的关联关系，依赖redis，不要存入数据库，避免db的性能瓶颈
+        redis.del(REDIS_FANS_AND_VLOGGER_RELATIONSHIP+":"+myId+":"+vlogerId);
+
+        return GraceJSONResult.ok();
+    }
+
+    @GetMapping("queryDoIFollowVloger")
+    public GraceJSONResult queryDoIFollowVloger(@RequestParam String myId,
+                                                @RequestParam String vlogerId) {
+        return GraceJSONResult.ok(fansService.queryDoIFollowVloger(myId, vlogerId));
+    }
+
+    @GetMapping("queryMyFollows")
+    public GraceJSONResult queryMyFollows(@RequestParam String myId,
+                                          @RequestParam Integer page,
+                                          @RequestParam Integer pageSize) {
+        if (page == null) {
+            page = COMMON_START_PAGE;
+        }
+        if (pageSize == null) {
+            pageSize = COMMON_PAGE_SIZE;
+        }
+        return GraceJSONResult.ok(fansService.queryMyFollows(myId,page,pageSize));
+    }
+
+    @GetMapping("queryMyFans")
+    public GraceJSONResult queryMyFans(@RequestParam String myId,
+                                          @RequestParam Integer page,
+                                          @RequestParam Integer pageSize) {
+        if (page == null) {
+            page = COMMON_START_PAGE;
+        }
+        if (pageSize == null) {
+            pageSize = COMMON_PAGE_SIZE;
+        }
+        return GraceJSONResult.ok(fansService.queryMyFans(myId,page,pageSize));
+    }
 }
