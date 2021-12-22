@@ -66,11 +66,24 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         }
         List<IndexVlogVO> list = vlogMapperCustom.getIndexVlogList(map);
         for (IndexVlogVO v:list) {
+            // 判断当前用户是否点赞过视频
+            String vlogId = v.getVlogId();
             if (StringUtils.isNotBlank(userId)) {
-                v.setDoILikeThisVlog(doILikeVlog(userId, v.getVlogId()));
+                v.setDoILikeThisVlog(doILikeVlog(userId,vlogId));
             }
+            // 获得当前视频被点赞过的总数
+            v.setLikeCounts(getVlogBeLikedCounts(vlogId));
         }
         return setterPagedGrid(list,page);
+    }
+
+    @Override
+    public Integer getVlogBeLikedCounts(String vlogId) {
+        String countsStr = redis.get(REDIS_VLOG_BE_LIKED_COUNTS+":"+vlogId);
+        if (StringUtils.isBlank(countsStr)) {
+            countsStr = "0";
+        }
+        return Integer.valueOf(countsStr);
     }
 
     private boolean doILikeVlog(String myId,String vlogId) {
@@ -135,5 +148,14 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         likedVlog.setUserId(userId);
         likedVlog.setVlogId(vlogId);
         myLikedVlogMapper.delete(likedVlog);
+    }
+
+    @Override
+    public PagedGridResult queryMyLikedVlogList(String userId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page,pageSize);
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId",userId);
+        List<IndexVlogVO> list = vlogMapperCustom.getMyLikedVlogList(map);
+        return setterPagedGrid(list,page);
     }
 }

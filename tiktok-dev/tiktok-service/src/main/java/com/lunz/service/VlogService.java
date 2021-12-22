@@ -50,4 +50,16 @@ public interface VlogService {
      * 用户取消点赞视频
      */
     public void userUnLikeVlog(String userId, String vlogId);
+
+    /**
+     * 获取视频点赞总数
+     */
+    public Integer getVlogBeLikedCounts(String vlogId);
+
+    /**
+     * 查询用户点赞过的短视频
+     */
+    public PagedGridResult queryMyLikedVlogList(String userId,
+                                                Integer page,
+                                                Integer pageSize);
 }

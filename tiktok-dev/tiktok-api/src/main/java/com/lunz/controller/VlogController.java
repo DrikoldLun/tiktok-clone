@@ -96,6 +96,13 @@ public class VlogController extends BaseInfoProperties {
         return GraceJSONResult.ok(gridResult);
     }
 
+    @GetMapping("myLikedList")
+    public GraceJSONResult myLikedList(@RequestParam String userId,
+                                       @RequestParam Integer page,
+                                       @RequestParam Integer pageSize) {
+        return GraceJSONResult.ok(vlogService.queryMyLikedVlogList(userId,page,pageSize));
+    }
+
     @PostMapping("like")
     public GraceJSONResult like(@RequestParam String userId,
                                 @RequestParam String vlogerId,
@@ -126,5 +133,10 @@ public class VlogController extends BaseInfoProperties {
         redis.del(REDIS_USER_LIKE_VLOG+":"+userId+":"+vlogId);
 
         return GraceJSONResult.ok();
+    }
+
+    @PostMapping("totalLikedCounts")
+    public GraceJSONResult totalLikedCounts(@RequestParam String vlogId) {
+        return GraceJSONResult.ok(vlogService.getVlogBeLikedCounts(vlogId));
     }
 }
