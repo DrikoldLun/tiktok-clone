@@ -4,8 +4,10 @@ import com.github.pagehelper.PageHelper;
 import com.lunz.base.BaseInfoProperties;
 import com.lunz.bo.VlogBO;
 import com.lunz.enums.YesOrNo;
+import com.lunz.mapper.MyLikedVlogMapper;
 import com.lunz.mapper.VlogMapper;
 import com.lunz.mapper.VlogMapperCustom;
+import com.lunz.pojo.MyLikedVlog;
 import com.lunz.pojo.Vlog;
 import com.lunz.service.VlogService;
 import com.lunz.utils.PagedGridResult;
@@ -30,6 +32,9 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
 
     @Autowired
     private VlogMapperCustom vlogMapperCustom;
+
+    @Autowired
+    private MyLikedVlogMapper myLikedVlogMapper;
 
     @Autowired
     private Sid sid;
@@ -95,5 +100,16 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         PageHelper.startPage(page,pageSize);
         List<Vlog> list = vlogMapper.selectByExample(example);
         return setterPagedGrid(list,page);
+    }
+
+    @Transactional
+    @Override
+    public void userLikeVlog(String userId, String vlogId) {
+        String rid = sid.nextShort();
+        MyLikedVlog likedVlog = new MyLikedVlog();
+        likedVlog.setId(rid);
+        likedVlog.setUserId(userId);
+        likedVlog.setVlogId(vlogId);
+        myLikedVlogMapper.insert(likedVlog);
     }
 }

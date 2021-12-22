@@ -10,6 +10,7 @@ import com.lunz.service.FansService;
 import com.lunz.utils.PagedGridResult;
 import com.lunz.vo.FansVO;
 import com.lunz.vo.VlogerVO;
+import org.apache.commons.lang3.StringUtils;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,10 +98,32 @@ public class FansServiceImpl extends BaseInfoProperties implements FansService {
 
     @Override
     public PagedGridResult queryMyFans(String myId, Integer page, Integer pageSize) {
+        /**
+         * <判断粉丝是否是我的朋友（互粉互关）>
+         *     普通做法：
+         *     多表关联+嵌套关联查询，这样会违反多表关联的规范，不可取，高并发下会出现性能问题
+         *
+         *     常规做法：
+         *     1. 避免过多的表关联查询，先查询我的粉丝列表，获得fanslist
+         *     2. 判断粉丝关注我，并且我也关注粉丝 -> 循环fansList获得每一个粉丝，再去数据库查询我是否关注他
+         *     3. 如果我也关注他，说明我俩互关（互粉），则标记flag为true，否则false
+         *
+         *     高端做法：
+         *     1. 关注、取关时，关联关系保存在redis中，不要依赖数据库
+         *     2. 数据库查询后，直接循环查询redis，这样可以避免第二次循环查询数据库的尴尬局面
+         */
+
         Map<String,Object> map = new HashMap<>();
         map.put("myId",myId);
         PageHelper.startPage(page,pageSize);
         List<FansVO> list = fansMapperCustom.queryMyFans(map);
+        for (FansVO f:list) {
+            String relationship = redis.get(REDIS_FANS_AND_VLOGGER_RELATIONSHIP+":"+myId+":"+f.getFanId());
+            if (StringUtils.isNotBlank(relationship) && relationship.equalsIgnoreCase("1")) {
+                f.setFriend(true);
+            }
+        }
+
         return setterPagedGrid(list,page);
     }
 }
