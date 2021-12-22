@@ -41,7 +41,12 @@ public interface VlogService {
                                            Integer yesOrNo);
 
     /**
-     * 用户点赞/喜欢的视频
+     * 用户点赞/喜欢视频
      */
     public void userLikeVlog(String userId, String vlogId);
+
+    /**
+     * 用户取消点赞视频
+     */
+    public void userUnLikeVlog(String userId, String vlogId);
 }
