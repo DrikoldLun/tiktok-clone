@@ -5,7 +5,7 @@
 	export default {
 		globalData: {  
 			// serverUrl: "http://192.168.0.101:8099",		// 家里 开发环境，不能使用localhost
-			serverUrl: "http://192.168.2.15:8099",			// 自习室
+			 serverUrl: "http://192.168.2.15:8099",			// 自习室
 			// serverUrl: "http://localhost",					// 错误示范！！！
 			// serverUrl: "http://192.168.1.6",					// 生产环境
 			
@@ -17,7 +17,6 @@
 		onLaunch: function() {
 			
 			console.log("onLaunch...测试调试信息的打印");
-			
 			
 			var me = this;
 			uni.onTabBarMidButtonTap(()=>{
@@ -188,17 +187,23 @@
 				var week = day * 7;
 				var month = day * 30;
 		
-				var time1 = new Date().getTime(); //当前的时间戳
-				// console.log(time1);
+				//console.log(new Date().getDate(),new Date().getHours());
+				//console.log(stringTime.getDate(),stringTime.getHours());
+				var time1 = Date.parse(new Date()); //当前的时间戳
+				// console.log(new Date().getHours());
+				console.log(time1);
 				// console.log(new Date(stringTime));
+				
 				var time2 = Date.parse(new Date(stringTime)); //指定时间的时间戳
-				// console.log(time2);
+				//console.log(time2);
 				var time = time1 - time2;
+				//console.log(time);
 		
 				var result = null;
 				if(time < 0) {
-					// alert("设置的时间不能早于当前时间！");
-					result = stringTime;
+					 console.log("设置的时间不能早于当前时间！");
+					 result = stringTime;
+					//result = "刚刚";
 				}else if(time/month >= 1){
 					result = parseInt(time/month) + "月前";
 				}else if(time/week >= 1){
@@ -271,6 +276,26 @@
 			        "Y+": date.getFullYear().toString(),        // 年
 			        "m+": (date.getMonth()+1).toString(),     // 月
 			        "d+": (date.getDate()+1).toString(),            // 日
+			        "H+": date.getHours().toString(),           // 时
+			        "M+": date.getMinutes().toString(),         // 分
+			        "S+": date.getSeconds().toString()          // 秒
+			        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+			    };
+			    for (let k in opt) {
+			        ret = new RegExp("(" + k + ")").exec(fmt);
+			        if (ret) {
+			            fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+			        };
+			    };
+			    return fmt;
+			},
+			
+			dateFormat2(fmt, date) {
+			    let ret;
+			    const opt = {
+			        "Y+": date.getFullYear().toString(),        // 年
+			        "m+": (date.getMonth()+1).toString(),     // 月
+			        "d+": (date.getDate()).toString(),            // 日
 			        "H+": date.getHours().toString(),           // 时
 			        "M+": date.getMinutes().toString(),         // 分
 			        "S+": date.getSeconds().toString()          // 秒
