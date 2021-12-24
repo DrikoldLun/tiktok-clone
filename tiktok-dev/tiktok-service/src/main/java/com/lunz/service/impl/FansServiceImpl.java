@@ -57,7 +57,7 @@ public class FansServiceImpl extends BaseInfoProperties implements FansService {
         }
         fansMapper.insert(fan);
         // 系统消息：关注
-        msgService.createMsg(myId,fid, MessageEnum.FOLLOW_YOU.type,null); // 关注不需要额外信息
+        msgService.createMsg(myId,vlogerId, MessageEnum.FOLLOW_YOU.type,null); // 关注不需要额外信息
     }
 
     @Transactional
