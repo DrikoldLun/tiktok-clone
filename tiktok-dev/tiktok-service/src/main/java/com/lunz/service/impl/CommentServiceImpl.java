@@ -50,7 +50,6 @@ public class CommentServiceImpl extends BaseInfoProperties implements CommentSer
 
         comment.setLikeCounts(0);
         comment.setCreateTime(new Date());
-        System.out.println(new Date());
 
         commentMapper.insert(comment);
 
