@@ -187,11 +187,11 @@
 				var week = day * 7;
 				var month = day * 30;
 		
-				var time1 = new Date().getTime(); //当前的时间戳
+				var time1 = Date.parse(new Date().getTime()); //当前的时间戳
 				// console.log(new Date().getHours());
 				// console.log(time1);
 				// console.log(new Date(stringTime));
-				var time2 = Date.parse(new Date(stringTime))-1; //指定时间的时间戳
+				var time2 = Date.parse(new Date(stringTime)); //指定时间的时间戳
 				// console.log(time2);
 				console.log(stringTime.getHours());
 				var time = time1 - time2;

@@ -29,11 +29,43 @@ public class CommentController extends BaseInfoProperties {
     }
 
     @GetMapping("counts")
-    public GraceJSONResult counts(@RequestParam String vlogId) throws Exception {
+    public GraceJSONResult counts(@RequestParam String vlogId) {
         String countsStr = redis.get(REDIS_VLOG_COMMENT_COUNTS+":"+vlogId);
         if (StringUtils.isBlank(countsStr)) {
             countsStr = "0";
         }
         return GraceJSONResult.ok(Integer.valueOf(countsStr));
+    }
+
+    @GetMapping("list")
+    public GraceJSONResult list(@RequestParam String vlogId,
+                                @RequestParam(defaultValue = "") String userId,
+                                @RequestParam Integer page,
+                                @RequestParam Integer pageSize) {
+        return GraceJSONResult.ok(commentService.queryVlogComments(vlogId,userId,page,pageSize));
+    }
+
+    @DeleteMapping("delete")
+    public GraceJSONResult delete(@RequestParam String commentUserId,
+                                @RequestParam String commentId,
+                                @RequestParam String vlogId) {
+        commentService.deleteComment(commentUserId,commentId,vlogId);
+        return GraceJSONResult.ok();
+    }
+
+    @PostMapping("like")
+    public GraceJSONResult like(@RequestParam String commentId,
+                                @RequestParam String userId) {
+        redis.increment(REDIS_VLOG_COMMENT_LIKED_COUNTS+":"+commentId,1);
+        redis.set(REDIS_USER_LIKE_COMMENT+":"+userId+":"+commentId,"1");
+        return GraceJSONResult.ok();
+    }
+
+    @PostMapping("unlike")
+    public GraceJSONResult unlike(@RequestParam String commentId,
+                                @RequestParam String userId) {
+        redis.decrement(REDIS_VLOG_COMMENT_LIKED_COUNTS+":"+commentId,1);
+        redis.del(REDIS_USER_LIKE_COMMENT+":"+userId+":"+commentId);
+        return GraceJSONResult.ok();
     }
 }
