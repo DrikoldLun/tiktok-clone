@@ -2,8 +2,13 @@ package com.lunz.controller;
 
 import com.lunz.base.BaseInfoProperties;
 import com.lunz.bo.CommentBO;
+import com.lunz.enums.MessageEnum;
 import com.lunz.grace.result.GraceJSONResult;
+import com.lunz.pojo.Comment;
+import com.lunz.pojo.Vlog;
 import com.lunz.service.CommentService;
+import com.lunz.service.MsgService;
+import com.lunz.service.VlogService;
 import com.lunz.vo.CommentVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -21,6 +28,12 @@ public class CommentController extends BaseInfoProperties {
 
     @Autowired
     CommentService commentService;
+
+    @Autowired
+    VlogService vlogService;
+
+    @Autowired
+    MsgService msgService;
 
     @PostMapping("create")
     public GraceJSONResult create(@RequestBody @Valid CommentBO commentBO) throws Exception {
@@ -58,6 +71,15 @@ public class CommentController extends BaseInfoProperties {
                                 @RequestParam String userId) {
         redis.increment(REDIS_VLOG_COMMENT_LIKED_COUNTS+":"+commentId,1);
         redis.set(REDIS_USER_LIKE_COMMENT+":"+userId+":"+commentId,"1");
+        // 系统消息-点赞评论
+        Comment comment = commentService.getCommment(commentId);
+        Vlog vlog = vlogService.getVlog(comment.getVlogId());
+        Map msgContent = new HashMap();
+        msgContent.put("vlogId",comment.getVlogId());
+        msgContent.put("vlogCover",vlog.getCover());
+        msgContent.put("commentId",commentId);
+        msgService.createMsg(userId,comment.getCommentUserId(),MessageEnum.LIKE_COMMENT.type,msgContent);
+
         return GraceJSONResult.ok();
     }
 

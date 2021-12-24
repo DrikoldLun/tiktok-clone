@@ -1,12 +1,18 @@
 package com.lunz.service;
 
 import com.lunz.bo.VlogBO;
+import com.lunz.pojo.Vlog;
 import com.lunz.utils.PagedGridResult;
 import com.lunz.vo.IndexVlogVO;
 
 import java.util.List;
 
 public interface VlogService {
+
+    /**
+     * 查找vlog
+     */
+    public Vlog getVlog(String vlogId);
 
     /**
      * 新增vlog视频

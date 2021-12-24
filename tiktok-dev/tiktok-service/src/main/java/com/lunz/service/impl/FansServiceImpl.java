@@ -2,11 +2,13 @@ package com.lunz.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.lunz.base.BaseInfoProperties;
+import com.lunz.enums.MessageEnum;
 import com.lunz.enums.YesOrNo;
 import com.lunz.mapper.FansMapper;
 import com.lunz.mapper.FansMapperCustom;
 import com.lunz.pojo.Fans;
 import com.lunz.service.FansService;
+import com.lunz.service.MsgService;
 import com.lunz.utils.PagedGridResult;
 import com.lunz.vo.FansVO;
 import com.lunz.vo.VlogerVO;
@@ -31,6 +33,9 @@ public class FansServiceImpl extends BaseInfoProperties implements FansService {
     private FansMapperCustom fansMapperCustom;
 
     @Autowired
+    private MsgService msgService;
+
+    @Autowired
     private Sid sid;
 
     @Transactional
@@ -51,6 +56,8 @@ public class FansServiceImpl extends BaseInfoProperties implements FansService {
             fan.setIsFanFriendOfMine(YesOrNo.NO.type);
         }
         fansMapper.insert(fan);
+        // 系统消息：关注
+        msgService.createMsg(myId,fid, MessageEnum.FOLLOW_YOU.type,null); // 关注不需要额外信息
     }
 
     @Transactional
