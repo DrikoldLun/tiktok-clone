@@ -749,7 +749,7 @@
 			},
 			// 时间显示 刚刚/xx小时前/...
 			getGraceDateBeforeNow(dateTimeStr) {
-				var date = app.dateFormat("YYYY-mm-dd HH:MM:SS", new Date(dateTimeStr));
+				var date = app.dateFormat2("YYYY-mm-dd HH:MM:SS", new Date(dateTimeStr));
 				// console.log(date);
 				return getApp().getDateBeforeNow(date);
 			},

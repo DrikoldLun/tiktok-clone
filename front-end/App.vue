@@ -187,20 +187,23 @@
 				var week = day * 7;
 				var month = day * 30;
 		
-				var time1 = Date.parse(new Date().getTime()); //当前的时间戳
+				//console.log(new Date().getDate(),new Date().getHours());
+				//console.log(stringTime.getDate(),stringTime.getHours());
+				var time1 = Date.parse(new Date()); //当前的时间戳
 				// console.log(new Date().getHours());
-				// console.log(time1);
+				console.log(time1);
 				// console.log(new Date(stringTime));
+				
 				var time2 = Date.parse(new Date(stringTime)); //指定时间的时间戳
-				// console.log(time2);
-				console.log(stringTime.getHours());
+				//console.log(time2);
 				var time = time1 - time2;
+				//console.log(time);
 		
 				var result = null;
 				if(time < 0) {
-					// console.log("设置的时间不能早于当前时间！");
-					// result = stringTime;
-					result = "刚刚";
+					 console.log("设置的时间不能早于当前时间！");
+					 result = stringTime;
+					//result = "刚刚";
 				}else if(time/month >= 1){
 					result = parseInt(time/month) + "月前";
 				}else if(time/week >= 1){
@@ -273,6 +276,26 @@
 			        "Y+": date.getFullYear().toString(),        // 年
 			        "m+": (date.getMonth()+1).toString(),     // 月
 			        "d+": (date.getDate()+1).toString(),            // 日
+			        "H+": date.getHours().toString(),           // 时
+			        "M+": date.getMinutes().toString(),         // 分
+			        "S+": date.getSeconds().toString()          // 秒
+			        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+			    };
+			    for (let k in opt) {
+			        ret = new RegExp("(" + k + ")").exec(fmt);
+			        if (ret) {
+			            fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+			        };
+			    };
+			    return fmt;
+			},
+			
+			dateFormat2(fmt, date) {
+			    let ret;
+			    const opt = {
+			        "Y+": date.getFullYear().toString(),        // 年
+			        "m+": (date.getMonth()+1).toString(),     // 月
+			        "d+": (date.getDate()).toString(),            // 日
 			        "H+": date.getHours().toString(),           // 时
 			        "M+": date.getMinutes().toString(),         // 分
 			        "S+": date.getSeconds().toString()          // 秒
