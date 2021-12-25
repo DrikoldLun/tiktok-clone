@@ -142,12 +142,20 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
 
     @Override
     public PagedGridResult queryMyVlogList(String userId, Integer page, Integer pageSize, Integer yesOrNo) {
-        Example example = new Example(Vlog.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("vlogerId",userId);
-        criteria.andEqualTo("isPrivate",yesOrNo);
         PageHelper.startPage(page,pageSize);
-        List<Vlog> list = vlogMapper.selectByExample(example);
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId",userId);
+        map.put("isPrivate",yesOrNo);
+        List<IndexVlogVO> list = vlogMapperCustom.getMyVlogList(map);
+        return setterPagedGrid(list,page);
+    }
+
+    @Override
+    public PagedGridResult queryMyLikedVlogList(String userId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page,pageSize);
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId",userId);
+        List<IndexVlogVO> list = vlogMapperCustom.getMyLikedVlogList(map);
         return setterPagedGrid(list,page);
     }
 
@@ -176,15 +184,6 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         likedVlog.setUserId(userId);
         likedVlog.setVlogId(vlogId);
         myLikedVlogMapper.delete(likedVlog);
-    }
-
-    @Override
-    public PagedGridResult queryMyLikedVlogList(String userId, Integer page, Integer pageSize) {
-        PageHelper.startPage(page,pageSize);
-        Map<String,Object> map = new HashMap<>();
-        map.put("userId",userId);
-        List<IndexVlogVO> list = vlogMapperCustom.getMyLikedVlogList(map);
-        return setterPagedGrid(list,page);
     }
 
     @Override

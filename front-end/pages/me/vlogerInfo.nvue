@@ -469,10 +469,10 @@
 					this.listRouteType = "myPublicList";
 					this.myPublicList(0);
 				} else if(index == 1) {
-					// this.publicPage = 0;
-					// this.publicTotalPage = 0;
-					// this.listRouteType = "myPrivateList";
-					// this.myPublicList(0);
+					//this.publicPage = 0;
+					//this.publicTotalPage = 0;
+					//this.listRouteType = "myPrivateList";
+					//this.myPublicList(0);
 					// 别人的页面，私有不显示
 					this.publicVlogList = [];
 				} else if(index == 2) {

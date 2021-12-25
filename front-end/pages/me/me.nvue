@@ -222,7 +222,7 @@
 					<image class="vlog-cover" 
 						style="align-self: center;" 
 						:src="vlog.cover" 
-						@click="goToVlog(vlog.id)"
+						@click="goToVlog(vlog.vlogId)"
 						mode="aspectFill"></image>
 				</block>
 			</view>
