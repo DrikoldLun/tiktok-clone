@@ -3,11 +3,16 @@ package com.lunz.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.lunz.base.BaseInfoProperties;
 import com.lunz.bo.CommentBO;
+import com.lunz.enums.MessageEnum;
 import com.lunz.enums.YesOrNo;
 import com.lunz.mapper.CommentMapper;
 import com.lunz.mapper.CommentMapperCustom;
+import com.lunz.mapper.VlogMapper;
 import com.lunz.pojo.Comment;
+import com.lunz.pojo.Vlog;
 import com.lunz.service.CommentService;
+import com.lunz.service.MsgService;
+import com.lunz.service.VlogService;
 import com.lunz.utils.PagedGridResult;
 import com.lunz.vo.CommentVO;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +36,18 @@ public class CommentServiceImpl extends BaseInfoProperties implements CommentSer
     private CommentMapperCustom commentMapperCustom;
 
     @Autowired
+    private VlogService vlogService;
+
+    @Autowired
+    private MsgService msgService;
+
+    @Autowired
     private Sid sid;
+
+    @Override
+    public Comment getCommment(String commentId) {
+        return commentMapper.selectByPrimaryKey(commentId);
+    }
 
     @Override
     public CommentVO createComment(CommentBO commentBO) {
@@ -59,6 +75,23 @@ public class CommentServiceImpl extends BaseInfoProperties implements CommentSer
         // 留言后的最新评论需要返回给前端做展示
         CommentVO commentVO = new CommentVO();
         BeanUtils.copyProperties(comment,commentVO);
+
+        // 评论/回复
+        Vlog vlog = vlogService.getVlog(commentBO.getVlogId());
+        Map msgContent = new HashMap();
+        msgContent.put("vlogId",commentBO.getVlogId());
+        msgContent.put("vlogCover",vlog.getCover());
+        msgContent.put("commentId",commentId);
+        msgContent.put("commentContent",commentBO.getContent());
+        Integer type = MessageEnum.COMMENT_VLOG.type; // 评论
+        String toId = commentBO.getVlogerId();
+        if (StringUtils.isNotBlank(commentBO.getFatherCommentId()) && !commentBO.getFatherCommentId().equalsIgnoreCase("0")) {
+            type = MessageEnum.REPLY_YOU.type; // 回复
+            toId = getCommment(commentBO.getFatherCommentId()).getCommentUserId();
+        }
+
+        msgService.createMsg(commentVO.getCommentUserId(),toId,type,msgContent);
+
         return commentVO;
     }
 

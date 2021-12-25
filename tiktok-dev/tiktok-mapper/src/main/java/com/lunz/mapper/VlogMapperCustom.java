@@ -10,6 +10,7 @@ import java.util.Map;
 @Repository
 public interface VlogMapperCustom {
     public List<IndexVlogVO> getIndexVlogList(@Param("paramMap")Map<String,Object> map);
+    public List<IndexVlogVO> getMyVlogList(@Param("paramMap")Map<String,Object> map);
     public List<IndexVlogVO> getVlogDetailById(@Param("paramMap")Map<String,Object> map);
     public List<IndexVlogVO> getMyLikedVlogList(@Param("paramMap")Map<String,Object> map);
     public List<IndexVlogVO> getMyFollowVlogList(@Param("paramMap")Map<String,Object> map);

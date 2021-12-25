@@ -191,7 +191,7 @@
 				//console.log(stringTime.getDate(),stringTime.getHours());
 				var time1 = Date.parse(new Date()); //当前的时间戳
 				// console.log(new Date().getHours());
-				console.log(time1);
+				// console.log(time1);
 				// console.log(new Date(stringTime));
 				
 				var time2 = Date.parse(new Date(stringTime)); //指定时间的时间戳

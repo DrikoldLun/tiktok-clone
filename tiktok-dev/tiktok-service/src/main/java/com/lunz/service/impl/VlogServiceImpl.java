@@ -3,6 +3,7 @@ package com.lunz.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.lunz.base.BaseInfoProperties;
 import com.lunz.bo.VlogBO;
+import com.lunz.enums.MessageEnum;
 import com.lunz.enums.YesOrNo;
 import com.lunz.mapper.MyLikedVlogMapper;
 import com.lunz.mapper.VlogMapper;
@@ -10,6 +11,7 @@ import com.lunz.mapper.VlogMapperCustom;
 import com.lunz.pojo.MyLikedVlog;
 import com.lunz.pojo.Vlog;
 import com.lunz.service.FansService;
+import com.lunz.service.MsgService;
 import com.lunz.service.VlogService;
 import com.lunz.utils.PagedGridResult;
 import com.lunz.vo.IndexVlogVO;
@@ -41,7 +43,15 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
     private FansService fansService;
 
     @Autowired
+    private MsgService msgService;
+
+    @Autowired
     private Sid sid;
+
+    @Override
+    public Vlog getVlog(String vlogId) {
+        return vlogMapper.selectByPrimaryKey(vlogId);
+    }
 
     @Transactional
     @Override
@@ -132,12 +142,20 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
 
     @Override
     public PagedGridResult queryMyVlogList(String userId, Integer page, Integer pageSize, Integer yesOrNo) {
-        Example example = new Example(Vlog.class);
-        Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("vlogerId",userId);
-        criteria.andEqualTo("isPrivate",yesOrNo);
         PageHelper.startPage(page,pageSize);
-        List<Vlog> list = vlogMapper.selectByExample(example);
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId",userId);
+        map.put("isPrivate",yesOrNo);
+        List<IndexVlogVO> list = vlogMapperCustom.getMyVlogList(map);
+        return setterPagedGrid(list,page);
+    }
+
+    @Override
+    public PagedGridResult queryMyLikedVlogList(String userId, Integer page, Integer pageSize) {
+        PageHelper.startPage(page,pageSize);
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId",userId);
+        List<IndexVlogVO> list = vlogMapperCustom.getMyLikedVlogList(map);
         return setterPagedGrid(list,page);
     }
 
@@ -150,6 +168,12 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         likedVlog.setUserId(userId);
         likedVlog.setVlogId(vlogId);
         myLikedVlogMapper.insert(likedVlog);
+        // 点赞消息入库，msgContent需要带有vlogId和vlogCover（与前端保持一致）
+        Vlog vlog = getVlog(vlogId);
+        Map msgContent = new HashMap();
+        msgContent.put("vlogId",vlogId);
+        msgContent.put("vlogCover",vlog.getCover());
+        msgService.createMsg(userId,vlog.getVlogerId(),MessageEnum.LIKE_VLOG.type,msgContent);
     }
 
     @Transactional
@@ -160,15 +184,6 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
         likedVlog.setUserId(userId);
         likedVlog.setVlogId(vlogId);
         myLikedVlogMapper.delete(likedVlog);
-    }
-
-    @Override
-    public PagedGridResult queryMyLikedVlogList(String userId, Integer page, Integer pageSize) {
-        PageHelper.startPage(page,pageSize);
-        Map<String,Object> map = new HashMap<>();
-        map.put("userId",userId);
-        List<IndexVlogVO> list = vlogMapperCustom.getMyLikedVlogList(map);
-        return setterPagedGrid(list,page);
     }
 
     @Override

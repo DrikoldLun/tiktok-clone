@@ -11,6 +11,7 @@ public class BaseInfoProperties {
     @Autowired
     public RedisOperator redis;
 
+    public static final Integer COMMON_START_PAGE_ZERO = 0;
     public static final Integer COMMON_START_PAGE = 1;
     public static final Integer COMMON_PAGE_SIZE = 10;
 
