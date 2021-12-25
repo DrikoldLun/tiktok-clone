@@ -2,18 +2,21 @@ package com.lunz.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.lunz.base.BaseInfoProperties;
+import com.lunz.base.RabbitMQConfig;
 import com.lunz.enums.MessageEnum;
 import com.lunz.enums.YesOrNo;
 import com.lunz.mapper.FansMapper;
 import com.lunz.mapper.FansMapperCustom;
+import com.lunz.mo.MessageMO;
 import com.lunz.pojo.Fans;
 import com.lunz.service.FansService;
-import com.lunz.service.MsgService;
+import com.lunz.utils.JsonUtils;
 import com.lunz.utils.PagedGridResult;
 import com.lunz.vo.FansVO;
 import com.lunz.vo.VlogerVO;
 import org.apache.commons.lang3.StringUtils;
 import org.n3r.idworker.Sid;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +36,10 @@ public class FansServiceImpl extends BaseInfoProperties implements FansService {
     private FansMapperCustom fansMapperCustom;
 
     @Autowired
-    private MsgService msgService;
+    private Sid sid;
 
     @Autowired
-    private Sid sid;
+    public RabbitTemplate rabbitTemplate;
 
     @Transactional
     @Override
@@ -56,8 +59,17 @@ public class FansServiceImpl extends BaseInfoProperties implements FansService {
             fan.setIsFanFriendOfMine(YesOrNo.NO.type);
         }
         fansMapper.insert(fan);
+
         // 系统消息：关注
-        msgService.createMsg(myId,vlogerId, MessageEnum.FOLLOW_YOU.type,null); // 关注不需要额外信息
+        // msgService.createMsg(myId,vlogerId, MessageEnum.FOLLOW_YOU.type,null); // 关注不需要额外信息
+        // 优化：使用mq异步解耦
+        MessageMO messageMO = new MessageMO();
+        messageMO.setFromUserId(myId);
+        messageMO.setToUserId(vlogerId);
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_MSG,
+                "sys.msg."+MessageEnum.FOLLOW_YOU.enValue,
+                JsonUtils.objectToJson(messageMO));
     }
 
     @Transactional

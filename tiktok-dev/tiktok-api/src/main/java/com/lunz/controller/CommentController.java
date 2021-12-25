@@ -1,18 +1,22 @@
 package com.lunz.controller;
 
 import com.lunz.base.BaseInfoProperties;
+import com.lunz.base.RabbitMQConfig;
 import com.lunz.bo.CommentBO;
 import com.lunz.enums.MessageEnum;
 import com.lunz.grace.result.GraceJSONResult;
+import com.lunz.mo.MessageMO;
 import com.lunz.pojo.Comment;
 import com.lunz.pojo.Vlog;
 import com.lunz.service.CommentService;
 import com.lunz.service.MsgService;
 import com.lunz.service.VlogService;
+import com.lunz.utils.JsonUtils;
 import com.lunz.vo.CommentVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +37,7 @@ public class CommentController extends BaseInfoProperties {
     VlogService vlogService;
 
     @Autowired
-    MsgService msgService;
+    RabbitTemplate rabbitTemplate;
 
     @PostMapping("create")
     public GraceJSONResult create(@RequestBody @Valid CommentBO commentBO) throws Exception {
@@ -78,7 +82,16 @@ public class CommentController extends BaseInfoProperties {
         msgContent.put("vlogId",comment.getVlogId());
         msgContent.put("vlogCover",vlog.getCover());
         msgContent.put("commentId",commentId);
-        msgService.createMsg(userId,comment.getCommentUserId(),MessageEnum.LIKE_COMMENT.type,msgContent);
+        //msgService.createMsg(userId,comment.getCommentUserId(),MessageEnum.LIKE_COMMENT.type,msgContent);
+        // 优化：使用mq异步解耦
+        MessageMO messageMO = new MessageMO();
+        messageMO.setFromUserId(userId);
+        messageMO.setToUserId(comment.getCommentUserId());
+        messageMO.setMsgContent(msgContent);
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_MSG,
+                "sys.msg."+MessageEnum.LIKE_COMMENT.enValue,
+                JsonUtils.objectToJson(messageMO));
 
         return GraceJSONResult.ok();
     }
