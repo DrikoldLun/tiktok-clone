@@ -8,4 +8,5 @@
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-service/src/main/java/com/lunz/service/UserService.java
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-service/src/main/java/com/lunz/service/MsgService.java
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-service/src/main/java/com/lunz/service/impl/FansServiceImpl.java
+/Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-service/src/main/java/com/lunz/base/RabbitMQConfig.java
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-service/src/main/java/com/lunz/service/impl/MsgServiceImpl.java

@@ -8,7 +8,10 @@ import com.lunz.service.VlogService;
 import com.lunz.utils.PagedGridResult;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,10 +20,14 @@ import javax.validation.Valid;
 @RestController
 @Api(tags = "VlogController短视频相关业务接口")
 @RequestMapping("vlog")
+@RefreshScope
 public class VlogController extends BaseInfoProperties {
 
     @Autowired
     private VlogService vlogService;
+
+    @Value("${nacos.vlog.likecountsthre}")
+    private Integer likeCountsThre;
 
     @PostMapping("publish")
     public GraceJSONResult publish(@Valid @RequestBody VlogBO vlogBO) {
@@ -148,6 +155,14 @@ public class VlogController extends BaseInfoProperties {
         // 我点赞的视频，需要在redis中保存关联关系
         redis.set(REDIS_USER_LIKE_VLOG+":"+userId+":"+vlogId,"1");
 
+        // 点赞完毕，获得当前在redis中的总数
+        // 比如获得总计数为 1k/1w/10w，假定阈值（配置）为2k
+        // 此时1k满足2000，则触发入库
+        Integer countTodb = countsFlushed(vlogId,REDIS_VLOG_BE_LIKED_COUNTS,likeCountsThre);
+        if (countTodb != null) {
+            vlogService.flushCounts(vlogId,countTodb);
+        }
+
         return GraceJSONResult.ok();
     }
 
@@ -164,6 +179,14 @@ public class VlogController extends BaseInfoProperties {
         // 我取消点赞的视频，删除在redis中的关联关系
         redis.del(REDIS_USER_LIKE_VLOG+":"+userId+":"+vlogId);
 
+        // 点赞完毕，获得当前在redis中的总数
+        // 比如获得总计数为 1k/1w/10w，假定阈值（配置）为2k
+        // 此时1k满足2000，则触发入库
+        Integer countTodb = countsFlushed(vlogId,REDIS_VLOG_BE_LIKED_COUNTS,likeCountsThre);
+        if (countTodb != null) {
+            vlogService.flushCounts(vlogId,countTodb);
+        }
+
         return GraceJSONResult.ok();
     }
 
@@ -171,4 +194,5 @@ public class VlogController extends BaseInfoProperties {
     public GraceJSONResult totalLikedCounts(@RequestParam String vlogId) {
         return GraceJSONResult.ok(vlogService.getVlogBeLikedCounts(vlogId));
     }
+
 }

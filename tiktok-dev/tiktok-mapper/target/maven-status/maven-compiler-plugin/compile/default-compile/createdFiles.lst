@@ -1,0 +1,10 @@
+com/lunz/mapper/FansMapperCustom.class
+com/lunz/mapper/FansMapper.class
+com/lunz/mapper/CommentMapperCustom.class
+com/lunz/repository/MessageRepository.class
+com/lunz/mapper/UsersMapper.class
+com/lunz/mapper/VlogMapper.class
+com/lunz/mapper/MyLikedVlogMapper.class
+com/lunz/mapper/CommentMapper.class
+com/lunz/my/mapper/MyMapper.class
+com/lunz/mapper/VlogMapperCustom.class

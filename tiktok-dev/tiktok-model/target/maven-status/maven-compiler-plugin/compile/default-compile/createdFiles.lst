@@ -1,2 +1,15 @@
+com/lunz/vo/VlogerVO.class
+com/lunz/bo/RegistLoginBO.class
+com/lunz/pojo/Vlog.class
+com/lunz/vo/FansVO.class
+com/lunz/bo/UpdatedUserBO.class
 com/lunz/bo/VlogBO.class
+com/lunz/pojo/MyLikedVlog.class
+com/lunz/pojo/Comment.class
+com/lunz/bo/CommentBO.class
+com/lunz/vo/IndexVlogVO.class
+com/lunz/vo/CommentVO.class
+com/lunz/pojo/Users.class
 com/lunz/vo/UsersVO.class
+com/lunz/pojo/Fans.class
+com/lunz/mo/MessageMO.class

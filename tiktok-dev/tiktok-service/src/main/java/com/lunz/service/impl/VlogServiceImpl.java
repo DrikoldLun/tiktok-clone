@@ -58,6 +58,26 @@ public class VlogServiceImpl extends BaseInfoProperties implements VlogService {
 
     @Transactional
     @Override
+    public void flushCounts(String vlogId, Integer counts) {
+        Vlog vlog = new Vlog();
+        vlog.setId(vlogId);
+        vlog.setLikeCounts(counts);
+        // 根据id修改对应row的likeCounts
+        vlogMapper.updateByPrimaryKeySelective(vlog);
+    }
+
+    @Transactional
+    @Override
+    public void flushCommentCounts(String vlogId, Integer counts) {
+        Vlog vlog = new Vlog();
+        vlog.setId(vlogId);
+        vlog.setCommentsCounts(counts);
+        // 根据id修改对应row的commentCounts
+        vlogMapper.updateByPrimaryKeySelective(vlog);
+    }
+
+    @Transactional
+    @Override
     public void createVlog(VlogBO vlogBO) {
         String vid = sid.nextShort();
         Vlog vlog = new Vlog();
