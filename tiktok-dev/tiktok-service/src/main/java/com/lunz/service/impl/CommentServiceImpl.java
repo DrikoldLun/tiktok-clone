@@ -22,6 +22,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -49,6 +50,16 @@ public class CommentServiceImpl extends BaseInfoProperties implements CommentSer
     @Override
     public Comment getCommment(String commentId) {
         return commentMapper.selectByPrimaryKey(commentId);
+    }
+
+    @Transactional
+    @Override
+    public void flushCounts(String commentId, Integer counts) {
+        Comment comment = new Comment();
+        comment.setId(commentId);
+        comment.setLikeCounts(counts);
+        // 根据id修改对应row的likeCounts
+        commentMapper.updateByPrimaryKeySelective(comment);
     }
 
     @Override

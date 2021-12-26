@@ -15,6 +15,13 @@ public interface VlogService {
     public Vlog getVlog(String vlogId);
 
     /**
+     * 把counts输入数据库
+     */
+    public void flushCounts(String vlogId, Integer counts);
+
+    public void flushCommentCounts(String vlogId, Integer counts);
+
+    /**
      * 新增vlog视频
      */
     public void createVlog(VlogBO vlogBO);

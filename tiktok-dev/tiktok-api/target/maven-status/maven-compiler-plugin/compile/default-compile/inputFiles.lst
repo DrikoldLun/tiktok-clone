@@ -10,4 +10,5 @@
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-api/src/main/java/com/lunz/interceptor/UserTokenInterceptor.java
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-api/src/main/java/com/lunz/interceptor/PassportInterceptor.java
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-api/src/main/java/com/lunz/config/MinIOConfig.java
+/Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-api/src/main/java/com/lunz/config/RabbitMQConsumer.java
 /Users/macbookpro/Desktop/projects/tiktok/tiktok-dev/tiktok-api/src/main/java/com/lunz/controller/HelloController.java

@@ -12,6 +12,8 @@ public interface CommentService {
      */
     public Comment getCommment(String commentId);
 
+    public void flushCounts(String commentId, Integer counts);
+
     /**
      * 发表评论
      */

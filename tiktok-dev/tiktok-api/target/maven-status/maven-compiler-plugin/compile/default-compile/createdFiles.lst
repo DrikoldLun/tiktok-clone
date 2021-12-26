@@ -1,4 +1,14 @@
+com/lunz/config/Knife4jConfig.class
 com/lunz/config/MinIOConfig.class
+com/lunz/interceptor/UserTokenInterceptor.class
 com/lunz/controller/VlogController.class
+com/lunz/config/InterceptorConfig.class
+com/lunz/interceptor/PassportInterceptor.class
+com/lunz/controller/PassportController.class
 com/lunz/Application.class
+com/lunz/controller/CommentController.class
+com/lunz/controller/UserInfoController.class
 com/lunz/controller/HelloController.class
+com/lunz/controller/MsgController.class
+com/lunz/controller/FansController.class
+com/lunz/config/RabbitMQConsumer.class

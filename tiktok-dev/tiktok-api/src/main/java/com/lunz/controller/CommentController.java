@@ -9,7 +9,6 @@ import com.lunz.mo.MessageMO;
 import com.lunz.pojo.Comment;
 import com.lunz.pojo.Vlog;
 import com.lunz.service.CommentService;
-import com.lunz.service.MsgService;
 import com.lunz.service.VlogService;
 import com.lunz.utils.JsonUtils;
 import com.lunz.vo.CommentVO;
@@ -18,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,22 +27,38 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RefreshScope
 @Api(tags = "CommentController评论模块的接口")
 @RequestMapping("comment")
 public class CommentController extends BaseInfoProperties {
 
     @Autowired
-    CommentService commentService;
+    private CommentService commentService;
 
     @Autowired
-    VlogService vlogService;
+    private VlogService vlogService;
 
     @Autowired
-    RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
+
+    @Value("${nacos.comment.likecountsthre}")
+    private Integer likeCountsThre;
+
+    @Value("${nacos.vlog.commentcountsthre}")
+    private Integer commentCountsThre;
 
     @PostMapping("create")
     public GraceJSONResult create(@RequestBody @Valid CommentBO commentBO) throws Exception {
         CommentVO commentVO = commentService.createComment(commentBO);
+        // 评论完毕，获得当前在redis中的总数
+        // 比如获得总计数为 1k/1w/10w，假定阈值（配置）为2k
+        // 此时1k满足2000，则触发入库
+        String vlogId = commentVO.getVlogId();
+        Integer countTodb = countsFlushed(vlogId,REDIS_VLOG_COMMENT_COUNTS,commentCountsThre);
+        if (countTodb != null) {
+            vlogService.flushCommentCounts(vlogId,countTodb);
+        }
+
         return GraceJSONResult.ok(commentVO);
     }
 
@@ -67,6 +84,14 @@ public class CommentController extends BaseInfoProperties {
                                 @RequestParam String commentId,
                                 @RequestParam String vlogId) {
         commentService.deleteComment(commentUserId,commentId,vlogId);
+        // 评论完毕，获得当前在redis中的总数
+        // 比如获得总计数为 1k/1w/10w，假定阈值（配置）为2k
+        // 此时1k满足2000，则触发入库
+        Integer countTodb = countsFlushed(vlogId,REDIS_VLOG_COMMENT_COUNTS,commentCountsThre);
+        if (countTodb != null) {
+            vlogService.flushCommentCounts(vlogId,countTodb);
+        }
+
         return GraceJSONResult.ok();
     }
 
@@ -75,6 +100,15 @@ public class CommentController extends BaseInfoProperties {
                                 @RequestParam String userId) {
         redis.increment(REDIS_VLOG_COMMENT_LIKED_COUNTS+":"+commentId,1);
         redis.set(REDIS_USER_LIKE_COMMENT+":"+userId+":"+commentId,"1");
+        // 点赞完毕，获得当前在redis中的总数
+        // 比如获得总计数为 1k/1w/10w，假定阈值（配置）为2k
+        // 此时1k满足2000，则触发入库
+        System.out.println(likeCountsThre);
+        Integer countTodb = countsFlushed(commentId,REDIS_VLOG_COMMENT_LIKED_COUNTS,likeCountsThre);
+        if (countTodb != null) {
+            commentService.flushCounts(commentId,countTodb);
+        }
+
         // 系统消息-点赞评论
         Comment comment = commentService.getCommment(commentId);
         Vlog vlog = vlogService.getVlog(comment.getVlogId());
@@ -101,6 +135,14 @@ public class CommentController extends BaseInfoProperties {
                                 @RequestParam String userId) {
         redis.decrement(REDIS_VLOG_COMMENT_LIKED_COUNTS+":"+commentId,1);
         redis.del(REDIS_USER_LIKE_COMMENT+":"+userId+":"+commentId);
+        // 点赞完毕，获得当前在redis中的总数
+        // 比如获得总计数为 1k/1w/10w，假定阈值（配置）为2k
+        // 此时1k满足2000，则触发入库
+        Integer countTodb = countsFlushed(commentId,REDIS_VLOG_COMMENT_LIKED_COUNTS,likeCountsThre);
+        if (countTodb != null) {
+            commentService.flushCounts(commentId,countTodb);
+        }
+
         return GraceJSONResult.ok();
     }
 }

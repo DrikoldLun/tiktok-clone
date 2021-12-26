@@ -1,4 +1,12 @@
 com/lunz/service/VlogService.class
+com/lunz/service/CommentService.class
+com/lunz/service/MsgService.class
 com/lunz/service/impl/UserServiceImpl.class
 com/lunz/service/impl/VlogServiceImpl.class
+com/lunz/service/FansService.class
+com/lunz/service/impl/CommentServiceImpl.class
+com/lunz/base/BaseInfoProperties.class
 com/lunz/service/UserService.class
+com/lunz/base/RabbitMQConfig.class
+com/lunz/service/impl/MsgServiceImpl.class
+com/lunz/service/impl/FansServiceImpl.class
