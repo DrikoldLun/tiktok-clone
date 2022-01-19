@@ -1,13 +1,22 @@
 package com.lunz.controller;
 
+import com.lunz.grace.result.GraceJSONResult;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@Api(tags = "HelloController 消息功能模块的接口")
 @RefreshScope
 public class HelloController {
+
+    @GetMapping("port")
+    public Object port() {
+        return GraceJSONResult.ok("Current port is 8080");
+    }
 
     /*@Value("${alibaba.teacher.name}")
     private String name;
